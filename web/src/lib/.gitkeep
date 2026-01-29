@@ -1,0 +1,4 @@
+# This directory will contain utility functions and helpers
+# Phase 1: types.ts, schema.ts
+# Phase 2: llm.ts, transform.ts
+# Phase 3: Additional utilities

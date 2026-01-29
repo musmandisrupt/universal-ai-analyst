@@ -3,3 +3,6 @@ node_modules/
 .next/
 dist/
 .DS_Store
+
+# Sensitive - do not commit
+Personal_access_token.txt
