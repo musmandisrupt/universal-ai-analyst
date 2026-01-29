@@ -1,28 +1,27 @@
 # Development Status & Handoff Document
 
 ## Current Phase
-**Phase 1: Data Ingestion & Schema Introspection**
+**Phase 1: Data Ingestion & Schema Introspection** — ✅ Complete. Ready for Phase 2 (Z.ai).
 
 ## Completed Features
-None yet - starting fresh
 
-## In Progress / To Do
-
-### Phase 1 (Cursor) - Data Ingestion
-- [ ] FR-01: File Upload
+### Phase 1 (Cursor) - Data Ingestion — DONE
+- [x] FR-01: File Upload
   - CSV file parsing with papaparse
   - File size validation (max 50MB)
   - Component: `/src/components/UploadZone.tsx`
   - API: `/src/app/api/upload/route.ts`
 
-- [ ] FR-02: Schema Introspection
+- [x] FR-02: Schema Introspection
   - Column type detection (date, number, categorical, boolean, string)
   - Statistical analysis (min, max, avg, cardinality)
   - Function: `/src/lib/schema.ts`
 
-- [ ] FR-03: Schema JSON Generation
+- [x] FR-03: Schema JSON Generation
   - Generate SchemaDefinition per section 4.1 of PRD
   - Output format validation
+
+## In Progress / To Do
 
 ### Phase 2 (Z.ai) - LLM Intelligence
 - [ ] FR-04: Intent Analysis
@@ -115,5 +114,5 @@ None yet - starting fresh
 
 ---
 
-Last Updated: January 21, 2026
-Status: Ready for Phase 1 (Cursor)
+Last Updated: January 23, 2026
+Status: Phase 1 complete. Ready for Phase 2 (Z.ai).
