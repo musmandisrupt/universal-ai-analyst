@@ -1,7 +1,7 @@
 # Development Status & Handoff Document
 
 ## Current Phase
-**Phase 1: Data Ingestion & Schema Introspection** — ✅ Complete. Ready for Phase 2 (Z.ai).
+**Phase 2: LLM Intelligence & Dynamic Visualization Engine** — ✅ Complete. Ready for Phase 3 (Cursor).
 
 ## Completed Features
 
@@ -21,27 +21,32 @@
   - Generate SchemaDefinition per section 4.1 of PRD
   - Output format validation
 
-## In Progress / To Do
-
-### Phase 2 (Z.ai) - LLM Intelligence
-- [ ] FR-04: Intent Analysis
+### Phase 2 (Roo) - LLM Intelligence — DONE
+- [x] FR-04: Intent Analysis
   - Parse user prompt + schema → IntentAnalysis JSON
   - Function: `/src/lib/llm.ts` → `analyzeIntent()`
-  - Use Z.ai API or OpenAI
+  - Use OpenAI API (configurable for Z.ai)
   - API: `/src/app/api/analyze/route.ts`
+  - Column validation to prevent hallucinations
 
-- [ ] FR-05: Dynamic Visualization Recommendation
+- [x] FR-05: Dynamic Visualization Recommendation
   - Suggest 3-5 relevant charts for vague prompts
+  - Intent-to-chart-type mapping
+  - Relevance scoring based on data characteristics
 
-- [ ] FR-06: Visualization Config Generation
+- [x] FR-06: Visualization Config Generation
   - LLM generates VizConfig JSON per section 4.3 of PRD
   - Validation against schema (catch hallucinations)
   - Function: `/src/lib/llm.ts` → `generateVizConfigs()`
+  - Support for bar, line, pie, scatter, area, combined charts
 
-- [ ] Data Transformation
+- [x] Data Transformation
   - Transform raw CSV → chart-ready data
   - Use Danfo.js for aggregation
   - API: `/src/app/api/transform/route.ts`
+  - Filter, group, aggregate, sort, and limit operations
+
+## In Progress / To Do
 
 ### Phase 3 (Cursor) - Visualization & Rendering
 - [ ] FR-09: Chart Rendering (ECharts)
@@ -53,11 +58,11 @@
 ---
 
 ## Tech Stack
-- Frontend: Next.js 14, React, TypeScript, TailwindCSS
+- Frontend: Next.js 16, React 19, TypeScript, TailwindCSS 4
 - Visualization: Apache ECharts
 - Data Processing: Danfo.js
-- LLM: Z.ai API or OpenAI
-- Database: PostgreSQL
+- LLM: OpenAI API (configurable for Z.ai)
+- Database: PostgreSQL (Phase 3)
 
 ---
 
@@ -66,9 +71,9 @@
 /src
   /app
     /api
-      /upload/route.ts          [CURSOR: Phase 1]
-      /analyze/route.ts         [Z.AI: Phase 2]
-      /transform/route.ts       [Z.AI: Phase 2]
+      /upload/route.ts          [CURSOR: Phase 1] [UPDATED]
+      /analyze/route.ts         [ROO: Phase 2]
+      /transform/route.ts       [ROO: Phase 2]
       /dashboard/save/route.ts  [CURSOR: Phase 3]
     page.tsx                    [CURSOR: Phase 3]
   /components
@@ -78,30 +83,24 @@
     Chart.tsx                   [CURSOR: Phase 3]
   /lib
     schema.ts                   [CURSOR: Phase 1]
-    llm.ts                      [Z.AI: Phase 2]
-    transform.ts                [Z.AI: Phase 2]
-    types.ts                    [CURSOR: Phase 1]
+    session.ts                  [ROO: Phase 2]
+    llm.ts                      [ROO: Phase 2]
+    transform.ts                [ROO: Phase 2]
+    types.ts                    [CURSOR: Phase 1] [UPDATED]
 ```
 
 ---
 
 ## Handoff Instructions
 
-### For Z.ai (when Cursor Phase 1 done):
+### For Cursor (when Roo Phase 2 done):
 1. Pull latest: `git pull origin main`
-2. Review `/src/lib/schema.ts` and `/src/lib/types.ts`
-3. Implement Phase 2: LLM integration (FR-04, FR-05, FR-06)
-4. Use PRD section 6.2 for exact LLM prompt templates
-5. Commit: `git commit -m "feat: Add LLM intent analysis + config generation (FR-04, FR-05, FR-06)"`
-6. Push: `git push origin main`
-
-### For Cursor (when Z.ai Phase 2 done):
-1. Pull latest: `git pull origin main`
-2. Review `/src/lib/llm.ts` and `/src/app/api/analyze/route.ts`
-3. Implement Phase 3: Visualization + UI (FR-09 through FR-13)
-4. Use PRD section 8 for UI/UX specs
-5. Commit: `git commit -m "feat: Add ECharts visualization + dashboard UI (FR-09 to FR-13)"`
-6. Push: `git push origin main`
+2. Review `/src/lib/llm.ts`, `/src/lib/transform.ts`, `/src/lib/session.ts`
+3. Review `/src/app/api/analyze/route.ts` and `/src/app/api/transform/route.ts`
+4. Implement Phase 3: Visualization + UI (FR-09 through FR-13)
+5. Use PRD section 8 for UI/UX specs
+6. Commit: `git commit -m "feat: Add ECharts visualization + dashboard UI (FR-09 to FR-13)"`
+7. Push: `git push origin main`
 
 ---
 
@@ -114,5 +113,5 @@
 
 ---
 
-Last Updated: January 23, 2026
-Status: Phase 1 complete. Ready for Phase 2 (Z.ai).
+Last Updated: January 29, 2026
+Status: Phase 2 complete. Ready for Phase 3 (Cursor).

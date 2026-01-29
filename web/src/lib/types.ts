@@ -52,36 +52,86 @@ export interface IntentAnalysis {
   suggestedQuestions: SuggestedQuestion[];
 }
 
+// New IntentAnalysis structure for LLM (from Phase 2)
+export interface IntentDimension {
+  name: string;
+  column: string;
+  granularity?: 'day' | 'month' | 'year' | 'week'; // for dates only
+}
+
+export interface IntentMetric {
+  name: string;
+  column: string;
+  aggregation: 'SUM' | 'AVG' | 'COUNT' | 'MIN' | 'MAX';
+}
+
+export interface IntentFilter {
+  column: string;
+  operator: '=' | '>' | '<' | '>=' | '<=' | 'in' | 'not_in';
+  value: string | number | boolean;
+}
+
+export interface LLMIntentAnalysis {
+  intentType: 'trend' | 'compare' | 'distribution' | 'correlation' | 'composition' | 'outliers' | 'forecast';
+  dimensions: IntentDimension[];
+  metrics: IntentMetric[];
+  filters: IntentFilter[];
+  confidence: number; // 0.0 to 1.0
+  explanation: string;
+}
+
 // ============================================================================
 // Section 4.3: Visualization Configuration Schema
 // ============================================================================
 
 export interface VizConfig {
   id: string; // e.g., "viz_001"
-  chartType: 'bar' | 'line' | 'pie' | 'scatter' | 'funnel' | 'table' | 'metric_card';
+  chartType: 'bar' | 'line' | 'pie' | 'scatter' | 'funnel' | 'table' | 'metric_card' | 'area' | 'combined';
   title: string;
   description?: string;
-  xAxis?: {
-    column: string;
-    label?: string;
+  dimensions: {
+    x: {
+      columnName: string;
+      type: 'date' | 'categorical' | 'value';
+      displayAs: string;
+    };
   };
-  yAxis?: {
-    column: string;
-    label?: string;
-    aggregation?: 'SUM' | 'AVG' | 'COUNT' | 'MIN' | 'MAX';
-  };
-  series?: {
-    column: string;
-    label?: string;
-    aggregation?: 'SUM' | 'AVG' | 'COUNT' | 'MIN' | 'MAX';
+  metrics: {
+    columnName: string;
+    aggregation: 'SUM' | 'AVG' | 'COUNT' | 'MIN' | 'MAX';
+    displayAs: string;
+    format?: 'currency_usd' | 'percentage' | 'integer';
   }[];
-  filters?: Record<string, string | number | boolean>;
-  groupBy?: string[]; // For multi-series charts
-  sortBy?: {
-    column: string;
-    order: 'asc' | 'desc';
+  filters?: {
+    columnName: string;
+    operator: 'gte' | 'lte' | 'eq' | 'in' | 'not_in' | 'gt' | 'lt';
+    value: string | number | boolean;
+    type?: 'date' | 'number' | 'string' | 'categorical';
+  };
+  sorting?: {
+    by: string;
+    order: 'ascending' | 'descending';
   };
   limit?: number; // For top N results
+  displaySettings?: {
+    showLegend: boolean;
+    showTooltip: boolean;
+    responsive: boolean;
+    colors?: string[];
+  };
+  metadata?: {
+    createdAt: string;
+    source: string;
+    userPrompt: string;
+    llmModel: string;
+  };
+}
+
+// Chart Recommendation Type
+export interface ChartRecommendation {
+  chartType: 'bar' | 'line' | 'pie' | 'scatter' | 'area' | 'combined';
+  relevanceScore: number; // 0.0 to 1.0
+  reason: string;
 }
 
 // ============================================================================
@@ -120,4 +170,39 @@ export interface UploadErrorResponse {
   success: false;
   error: string;
   code: 'FILE_INVALID_TYPE' | 'FILE_TOO_LARGE' | 'FILE_PARSE_ERROR' | 'UNKNOWN_ERROR';
+}
+
+export interface AnalyzeResponse {
+  success: true;
+  intentAnalysis: IntentAnalysis;
+  vizConfigs: VizConfig[];
+  metadata: {
+    processingTime: number;
+    model: string;
+    tokensUsed?: number;
+  };
+}
+
+export interface AnalyzeErrorResponse {
+  success: false;
+  error: string;
+  suggestions?: string[];
+}
+
+export interface TransformResponse {
+  success: true;
+  processedData: {
+    vizId: string;
+    data: Record<string, any>[];
+    metadata: {
+      rowCount: number;
+      transformations: string[];
+      executedAt: string;
+    };
+  }[];
+}
+
+export interface TransformErrorResponse {
+  success: false;
+  error: string;
 }

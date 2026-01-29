@@ -7,19 +7,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Papa from 'papaparse';
 import { analyzeSchema } from '@/lib/schema';
+import { createSession, getSessionData } from '@/lib/session';
 import { UploadResponse, UploadErrorResponse } from '@/lib/types';
-
-// In-memory session storage (temporary, expires after 24h)
-// TODO: Replace with Redis or database in Phase 3
-const sessions = new Map<
-  string,
-  { data: string[][]; expiresAt: number }
->();
-
-// Generate session ID
-function generateSessionId(): string {
-  return `sess_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
-}
+import { csvRowsToObjects } from '@/lib/transform';
 
 // Maximum file size: 50MB
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB in bytes
@@ -99,13 +89,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(errorResponse, { status: 400 });
     }
 
-    // Generate session ID
-    const sessionId = generateSessionId();
-
     // Analyze schema
     let schema;
     try {
-      schema = analyzeSchema(csvRows, file.name, sessionId);
+      schema = analyzeSchema(csvRows, file.name, '');
     } catch (schemaError) {
       const errorResponse: UploadErrorResponse = {
         success: false,
@@ -118,20 +105,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(errorResponse, { status: 400 });
     }
 
-    // Store raw CSV data in memory (expires after 24h)
-    const expiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
-    sessions.set(sessionId, {
-      data: csvRows,
-      expiresAt,
-    });
+    // Convert CSV rows to objects for storage
+    const csvObjects = csvRowsToObjects(csvRows);
 
-    // Clean up expired sessions (simple cleanup)
-    const now = Date.now();
-    for (const [id, session] of sessions.entries()) {
-      if (session.expiresAt < now) {
-        sessions.delete(id);
-      }
-    }
+    // Create session with schema and CSV data
+    const sessionId = createSession(file.name, schema, csvObjects);
 
     // Generate preview: first 5 rows as objects
     const headers = csvRows[0];
@@ -174,13 +152,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Export function to get session data (for future use)
-export function getSessionData(sessionId: string): string[][] | null {
-  const session = sessions.get(sessionId);
-  if (!session) return null;
-  if (session.expiresAt < Date.now()) {
-    sessions.delete(sessionId);
-    return null;
-  }
-  return session.data;
-}
+// Export function to get session data (for backward compatibility)
+// Note: This is now imported from '@/lib/session'
+export { getSessionData } from '@/lib/session';
