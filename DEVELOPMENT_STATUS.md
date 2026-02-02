@@ -46,14 +46,37 @@
   - API: `/src/app/api/transform/route.ts`
   - Filter, group, aggregate, sort, and limit operations
 
+### Phase 2 (Roo) - UI Integration — DONE
+- [x] ChatInterface Component
+  - Natural language input with chat history
+  - Suggested questions based on intent analysis
+  - Integration with `/api/analyze` endpoint
+  - Component: `/src/components/ChatInterface.tsx`
+
+- [x] Main Page Integration
+  - State management (sessionId, schema, vizConfigs, showChat)
+  - UploadZone → ChatInterface flow
+  - Back to Upload navigation
+  - Fixed empty page bug (inverted conditional rendering)
+  - File: `/src/app/page.tsx`
+
+- [x] Session Management
+  - In-memory session storage with 24h expiration
+  - Functions: createSession(), getSessionData(), updateSession(), deleteSession()
+  - File: `/src/lib/session.ts`
+
 ## In Progress / To Do
 
 ### Phase 3 (Cursor) - Visualization & Rendering
 - [ ] FR-09: Chart Rendering (ECharts)
 - [ ] FR-10: Interactive Elements (tooltips, export)
 - [ ] FR-11: Multi-Chart Dashboard Layout
-- [ ] FR-12: Chat Interface
 - [ ] FR-13: Dashboard Persistence (PostgreSQL)
+
+### Known Issues / Notes
+- LLM API key needs to be configured in `web/.env.local` (currently placeholder)
+- Some chart types (e.g., "heatmap") may not be supported by current validation logic
+- Connection errors may occur if OpenAI API is unreachable (network issues)
 
 ---
 
@@ -74,13 +97,13 @@
       /upload/route.ts          [CURSOR: Phase 1] [UPDATED]
       /analyze/route.ts         [ROO: Phase 2]
       /transform/route.ts       [ROO: Phase 2]
-      /dashboard/save/route.ts  [CURSOR: Phase 3]
-    page.tsx                    [CURSOR: Phase 3]
+      /dashboard/save/route.ts  [CURSOR: Phase 3 - TODO]
+    page.tsx                    [ROO: Phase 2 - UPDATED]
   /components
     UploadZone.tsx              [CURSOR: Phase 1]
-    ChatInterface.tsx           [CURSOR: Phase 3]
-    ChartGrid.tsx               [CURSOR: Phase 3]
-    Chart.tsx                   [CURSOR: Phase 3]
+    ChatInterface.tsx           [ROO: Phase 2]
+    ChartGrid.tsx               [CURSOR: Phase 3 - TODO]
+    Chart.tsx                   [CURSOR: Phase 3 - TODO]
   /lib
     schema.ts                   [CURSOR: Phase 1]
     session.ts                  [ROO: Phase 2]
@@ -93,14 +116,28 @@
 
 ## Handoff Instructions
 
-### For Cursor (when Roo Phase 2 done):
+### For Cursor (Phase 3 - Visualization & Rendering):
 1. Pull latest: `git pull origin main`
-2. Review `/src/lib/llm.ts`, `/src/lib/transform.ts`, `/src/lib/session.ts`
-3. Review `/src/app/api/analyze/route.ts` and `/src/app/api/transform/route.ts`
-4. Implement Phase 3: Visualization + UI (FR-09 through FR-13)
+2. Review Phase 2 files:
+   - `/src/lib/llm.ts` - LLM functions for intent analysis and config generation
+   - `/src/lib/transform.ts` - Data transformation using Danfo.js
+   - `/src/lib/session.ts` - Session management
+   - `/src/app/api/analyze/route.ts` - Natural language analysis endpoint
+   - `/src/app/api/transform/route.ts` - Data transformation endpoint
+3. Review UI integration:
+   - `/src/components/ChatInterface.tsx` - Natural language chat interface
+   - `/src/app/page.tsx` - Main page with state management
+4. Implement Phase 3: Visualization + Dashboard (FR-09, FR-10, FR-11, FR-13)
 5. Use PRD section 8 for UI/UX specs
-6. Commit: `git commit -m "feat: Add ECharts visualization + dashboard UI (FR-09 to FR-13)"`
-7. Push: `git push origin main`
+6. Note: ChatInterface (FR-12) is already implemented, integrate with visualization
+7. Commit: `git commit -m "feat: Add ECharts visualization + dashboard UI (FR-09, FR-10, FR-11, FR-13)"`
+8. Push: `git push origin main`
+
+### Environment Setup:
+- Copy `web/.env.local.example` to `web/.env.local` if not exists
+- Set `OPENAI_API_KEY` in `.env.local` for LLM functionality
+- Dev server: `cd web && npm run dev`
+- Runs on http://localhost:3000
 
 ---
 
@@ -113,5 +150,10 @@
 
 ---
 
-Last Updated: January 29, 2026
-Status: Phase 2 complete. Ready for Phase 3 (Cursor).
+Last Updated: February 2, 2026
+Status: Phase 2 complete (LLM Intelligence + UI Integration). Ready for Phase 3 (Visualization & Dashboard).
+
+### Recent Commits:
+- `22522a4` - fix: Invert conditional rendering logic to show UploadZone initially
+- `38992b4` - feat: Add ChatInterface component and integrate Phase 1 → Phase 2
+- `102666c` - feat: Implement LLM intent analysis + dynamic visualization config generation
