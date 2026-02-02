@@ -149,6 +149,7 @@ export interface SessionData {
 
 export interface ChatMessage {
   id: string;
+  sessionId?: string; // Associated session ID
   role: 'user' | 'assistant';
   content: string;
   timestamp: string; // ISO 8601 timestamp
